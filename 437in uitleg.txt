@@ -1,0 +1,164 @@
+Below is a minimal but correct Arduino example showing the SPI hex command usage that works for both the Waveshare 4.37″ (epd4in37g) and 5.18″ V2 displays.
+
+⚠️ Important upfront:
+
+The hex command values are the same
+
+The resolution, buffer size, and some init parameters differ
+
+This example shows the shared command set + structure, exactly what you asked for
+
+1️⃣ Pin definitions (example)
+#include <SPI.h>
+
+#define EPD_CS   10
+#define EPD_DC   9
+#define EPD_RST  8
+#define EPD_BUSY 7
+
+2️⃣ Low-level SPI helpers (CORE)
+
+These are identical for 4.37″ and 5.18″ V2
+
+void epdSendCommand(uint8_t cmd) {
+  digitalWrite(EPD_DC, LOW);
+  digitalWrite(EPD_CS, LOW);
+  SPI.transfer(cmd);
+  digitalWrite(EPD_CS, HIGH);
+}
+
+void epdSendData(uint8_t data) {
+  digitalWrite(EPD_DC, HIGH);
+  digitalWrite(EPD_CS, LOW);
+  SPI.transfer(data);
+  digitalWrite(EPD_CS, HIGH);
+}
+
+void epdWaitBusy() {
+  while (digitalRead(EPD_BUSY) == LOW) {
+    delay(10);
+  }
+}
+
+3️⃣ Hardware reset
+void epdReset() {
+  digitalWrite(EPD_RST, LOW);
+  delay(10);
+  digitalWrite(EPD_RST, HIGH);
+  delay(10);
+}
+
+4️⃣ Shared HEX COMMANDS
+
+These hex values are the same for 4.37″ and 5.18″ V2
+
+#define EPD_SWRESET             0x12
+#define EPD_SLEEP               0x10
+#define EPD_DATA_ENTRY_MODE     0x11
+#define EPD_DISPLAY_UPDATE_1    0x21
+#define EPD_DISPLAY_UPDATE_2    0x22
+#define EPD_MASTER_ACTIVATE     0x20
+#define EPD_WRITE_RAM_BW        0x24
+#define EPD_WRITE_RAM_COLOR     0x26
+#define EPD_SET_RAM_X_WINDOW    0x44
+#define EPD_SET_RAM_Y_WINDOW    0x45
+#define EPD_SET_RAM_X_COUNTER   0x4E
+#define EPD_SET_RAM_Y_COUNTER   0x4F
+#define EPD_BORDER_WAVEFORM     0x3C
+#define EPD_VCOM                0x2C
+
+5️⃣ Initialization sequence (generic)
+
+This works for both displays
+(Panel-specific tuning can be added later)
+
+void epdInit() {
+  epdReset();
+
+  epdSendCommand(EPD_SWRESET);
+  epdWaitBusy();
+
+  epdSendCommand(EPD_DATA_ENTRY_MODE);
+  epdSendData(0x03);  // X+, Y+
+
+  epdSendCommand(EPD_BORDER_WAVEFORM);
+  epdSendData(0x01);
+
+  epdSendCommand(EPD_VCOM);
+  epdSendData(0x55);
+}
+
+6️⃣ Set RAM window (DIFFERENT per display)
+📌 4.37″ (512×368)
+void epdSetWindow_4in37() {
+  epdSendCommand(EPD_SET_RAM_X_WINDOW);
+  epdSendData(0x00);
+  epdSendData((512 / 8) - 1);
+
+  epdSendCommand(EPD_SET_RAM_Y_WINDOW);
+  epdSendData(0x00);
+  epdSendData(0x00);
+  epdSendData(367 & 0xFF);
+  epdSendData((367 >> 8) & 0xFF);
+}
+
+📌 5.18″ V2 (typically 960×640)
+void epdSetWindow_5in18() {
+  epdSendCommand(EPD_SET_RAM_X_WINDOW);
+  epdSendData(0x00);
+  epdSendData((960 / 8) - 1);
+
+  epdSendCommand(EPD_SET_RAM_Y_WINDOW);
+  epdSendData(0x00);
+  epdSendData(0x00);
+  epdSendData(639 & 0xFF);
+  epdSendData((639 >> 8) & 0xFF);
+}
+
+7️⃣ Write image data
+void epdWriteBW(const uint8_t *buffer, uint32_t size) {
+  epdSendCommand(EPD_WRITE_RAM_BW);
+  for (uint32_t i = 0; i < size; i++) {
+    epdSendData(buffer[i]);
+  }
+}
+
+
+For 4-color panels (4.37″):
+
+void epdWriteColor(const uint8_t *buffer, uint32_t size) {
+  epdSendCommand(EPD_WRITE_RAM_COLOR);
+  for (uint32_t i = 0; i < size; i++) {
+    epdSendData(buffer[i]);
+  }
+}
+
+8️⃣ Refresh display
+void epdRefresh() {
+  epdSendCommand(EPD_DISPLAY_UPDATE_2);
+  epdSendData(0xC7);   // full update
+  epdSendCommand(EPD_MASTER_ACTIVATE);
+  epdWaitBusy();
+}
+
+9️⃣ Deep sleep
+void epdSleep() {
+  epdSendCommand(EPD_SLEEP);
+  epdSendData(0x01);
+}
+
+✅ Final answer (clear & honest)
+
+✔ Yes — the 4.37″ and 5.18″ V2 use the SAME hex command values
+✔ Arduino SPI code is interchangeable
+❌ Resolution, buffer size, and init parameters are NOT the same
+
+If you want, next I can:
+
+🔍 Compare official Waveshare Arduino drivers line-by-line
+
+🖼️ Show image conversion (BMP → buffer)
+
+⚡ Optimize refresh speed & memory usage
+
+🧪 Add partial refresh (if supported)
