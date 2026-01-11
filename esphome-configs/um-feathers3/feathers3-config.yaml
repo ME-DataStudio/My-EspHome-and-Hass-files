@@ -1,5 +1,5 @@
 substitutions:
-  device_id: "4in37BWYR"
+  device_id: "4in37bwyr"
   wifi_ssid: !secret wifi_ssid
   wifi_password: !secret wifi_password
   wake_up_time: "04:00:00"
@@ -82,4 +82,5 @@ display:
 deep_sleep:
   run_duration: 40s
   sleep_duration: 25200s # 7h
+
 
