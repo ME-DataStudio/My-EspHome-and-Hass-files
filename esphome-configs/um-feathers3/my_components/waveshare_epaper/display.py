@@ -175,7 +175,7 @@ MODELS = {
     "2.13inv3": ("c", WaveshareEPaper2P13InV3),
     "1.54in-m5coreink-m09": ("b", GDEW0154M09),
     "13.3in-k": ("b", WaveshareEPaper13P3InK),
-    "4.37in":("c",WaveshareEPaper4P37In),
+    "4.37in":("a",WaveshareEPaper4P37In),
 }
 
 RESET_PIN_REQUIRED_MODELS = ("2.13inv2", "2.13in-ttgo-b74")
