@@ -4750,7 +4750,7 @@ void WaveshareEPaper13P3InK::dump_config() {
   LOG_UPDATE_INTERVAL(this);
 }
 
-void WaveshareEPaper4P3In::initialize() {
+void WaveshareEPaper4P37In::initialize() {
   // COMMAND POWER SETTING
   this->command(0x01);
   this->data(0x37);
@@ -4802,7 +4802,7 @@ void WaveshareEPaper4P3In::initialize() {
   this->command(0xE5);
   this->data(0x03);
 }
-void HOT WaveshareEPaper4P3In::display() {
+void HOT WaveshareEPaper4P37In::display() {
   // COMMAND DATA START TRANSMISSION 1
   this->command(0x10);
 
@@ -4836,11 +4836,11 @@ void HOT WaveshareEPaper4P3In::display() {
   // COMMAND DISPLAY REFRESH
   this->command(0x12);
 }
-int WaveshareEPaper4P3In::get_width_internal() { return 512; }
-int WaveshareEPaper4P3In::get_height_internal() { return 368; }
-void WaveshareEPaper4P3In::dump_config() {
+int WaveshareEPaper4P37In::get_width_internal() { return 512; }
+int WaveshareEPaper4P37In::get_height_internal() { return 368; }
+void WaveshareEPaper4P37In::dump_config() {
   LOG_DISPLAY("", "Waveshare E-Paper", this);
-  ESP_LOGCONFIG(TAG, "  Model: 5.83in");
+  ESP_LOGCONFIG(TAG, "  Model: 4.37in");
   LOG_PIN("  Reset Pin: ", this->reset_pin_);
   LOG_PIN("  DC Pin: ", this->dc_pin_);
   LOG_PIN("  Busy Pin: ", this->busy_pin_);
