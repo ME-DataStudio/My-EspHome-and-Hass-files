@@ -1099,7 +1099,7 @@ class WaveshareEPaper13P3InK : public WaveshareEPaper {
   uint32_t idle_timeout_() override;
 };
 
-class WaveshareEPaper4P3In : public WaveshareEPaper {
+class WaveshareEPaper4P37In : public WaveshareEPaper {
  public:
   void initialize() override;
 
