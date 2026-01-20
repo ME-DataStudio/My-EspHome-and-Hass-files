@@ -4749,58 +4749,79 @@ void WaveshareEPaper13P3InK::dump_config() {
   LOG_PIN("  Busy Pin: ", this->busy_pin_);
   LOG_UPDATE_INTERVAL(this);
 }
-
+// ========================================================
+//               4.37in (G version)
+// Datasheet/Specification/Reference:
+//  - https://www.waveshare.com/wiki/4.37inch_e-Paper_Module_(G)
+//  - https://github.com/waveshareteam/e-Paper/tree/master/Arduino/epd4in37g
+// ========================================================
 void WaveshareEPaper4P37In::initialize() {
-  // COMMAND POWER SETTING
+  this->command(0xAA);
+  this->data(0x49);
+  this->data(0x55);
+  this->data(0x20);
+	this->data(0x08);
+	this->data(0x09);
+  this->data(0x18);
+
   this->command(0x01);
-  this->data(0x37);
-  this->data(0x00);
+  this->data(0x3F);
 
-  // COMMAND PANEL SETTING
   this->command(0x00);
-  this->data(0xCF);
-  this->data(0x0B);
+  this->data(0x4F);
+  this->data(0x69);
 
-  // COMMAND BOOSTER SOFT START
-  this->command(0x06);
-  this->data(0xC7);
-  this->data(0xCC);
-  this->data(0x28);
+  this->command(0x05);
+  this->data(0x40);
+  this->data(0x1F);
+  this->data(0x1F);
+  this->data(0x2C);
 
-  // COMMAND POWER ON
-  this->command(0x04);
-  this->wait_until_idle_();
-  delay(10);
-
-  // COMMAND PLL CONTROL
-  this->command(0x30);
-  this->data(0x3C);
-
-  // COMMAND TEMPERATURE SENSOR CALIBRATION
-  this->command(0x41);
-  this->data(0x00);
-
-  // COMMAND VCOM AND DATA INTERVAL SETTING
-  this->command(0x50);
-  this->data(0x77);
-
-  // COMMAND TCON SETTING
-  this->command(0x60);
+  this->command(0x08);
+  this->data(0x6F);
+  this->data(0x1F);
+  this->data(0x1F);
   this->data(0x22);
 
-  // COMMAND RESOLUTION SETTING
+	//===================
+	//20211212
+	//First setting
+  this->command(0x06);
+  this->data(0x6F);
+  this->data(0x1F);
+  this->data(0x17);
+  this->data(0x17);
+	//===================
+	
+  this->command(0x03);
+  this->data(0x00);
+  this->data(0x54);
+  this->data(0x00);
+  this->data(0x44); 
+
+  this->command(0x50);
+  this->data(0x3F);
+
+  this->command(0x60);
+  this->data(0x02);
+  this->data(0x00);
+
+	//Please notice that PLL must be set for version 2 IC
+  this->command(0x30);
+  this->data(0x08);
+	
   this->command(0x61);
   this->data(0x02);
-  this->data(0x58);
+  this->data(0x00);
+  this->data(0x01); 
+  this->data(0x70); 
+
+  this->command(0xE3);
+  this->data(0x2F);
+
+  this->command(0x84);
   this->data(0x01);
-  this->data(0xC0);
 
-  // COMMAND VCM DC SETTING REGISTER
-  this->command(0x82);
-  this->data(0x1E);
-
-  this->command(0xE5);
-  this->data(0x03);
 }
 void HOT WaveshareEPaper4P37In::display() {
   // COMMAND DATA START TRANSMISSION 1
