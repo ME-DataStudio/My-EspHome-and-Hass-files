@@ -12,7 +12,7 @@ substitutions:
   busy_pin: "GPIO7"
   reset_pin: "GPIO5"
 
-  waveshare_model: "4.37in" # or another waveshare model
+  waveshare_model: "4.37in" # or another waveshare model must be existing in the components sourcefile display.py
 
 esphome:
   name: eink-frame-${device_id}
@@ -55,7 +55,7 @@ online_image:
     type: BINARY
     on_download_finished:
       then:
-        - component.update: my_display
+        - component.update: my_display # is the id from display: section
         - logger.log: "Downloaded image"
     on_error:
       then:
@@ -82,5 +82,6 @@ display:
 deep_sleep:
   run_duration: 40s
   sleep_duration: 25200s # 7h
+
 
 
