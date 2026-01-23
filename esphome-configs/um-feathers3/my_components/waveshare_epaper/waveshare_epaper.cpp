@@ -4827,38 +4827,24 @@ void WaveshareEPaper4P37In::initialize() {
 
 }
 void HOT WaveshareEPaper4P37In::display() {
-  // COMMAND DATA START TRANSMISSION 1
-  this->command(0x10);
+  {
+    UWORD Width, Height;
+    Width = (get_width_internal() % 4 == 0)? (get_width_internal() / 4 ): (get_width_internal() / 4 + 1);
+    Height = get_height_internal();
+    
+    SendCommand(0x04);
+    while(DigitalRead(this->busy_pin_) == LOW) {      //LOW: busy, HIGH: idle
+        DelayMs(5);
+    } 
 
-  this->start_data_();
-  for (size_t i = 0; i < this->get_buffer_length_(); i++) {
-    uint8_t temp1 = this->buffer_[i];
-    for (uint8_t j = 0; j < 8; j++) {
-      uint8_t temp2;
-      if (temp1 & 0x80) {
-        temp2 = 0x03;
-      } else {
-        temp2 = 0x00;
-      }
-
-      temp2 <<= 4;
-      temp1 <<= 1;
-      j++;
-      if (temp1 & 0x80) {
-        temp2 |= 0x03;
-      } else {
-        temp2 |= 0x00;
-      }
-      temp1 <<= 1;
-      this->write_byte(temp2);
+    SendCommand(0x10);
+    for (UWORD j = 0; j < Height; j++) {
+        for (UWORD i = 0; i < Width; i++) {
+            SendData(pgm_read_byte(&Image[i + j * Width]));
+        }
     }
-
-    App.feed_wdt();
-  }
-  this->end_data_();
-
-  // COMMAND DISPLAY REFRESH
-  this->command(0x12);
+    TurnOnDisplay();
+} 
 }
 int WaveshareEPaper4P37In::get_width_internal() { return 512; }
 int WaveshareEPaper4P37In::get_height_internal() { return 368; }
