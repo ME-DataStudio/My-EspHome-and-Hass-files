@@ -4756,13 +4756,6 @@ void WaveshareEPaper13P3InK::dump_config() {
 //  - https://github.com/waveshareteam/e-Paper/tree/master/Arduino/epd4in37g
 // ========================================================
 void WaveshareEPaper4P37In::initialize() {
-//  this->command(0xAA);
-//  this->data(0x49);
-//  this->data(0x55);
-//  this->data(0x20);
-//  this->data(0x08);
-//  this->data(0x09);
-//  this->data(0x18);
   this->wait_until_idle_();
   this->command(0x12);  // SWRESET
   this->wait_until_idle_();	
@@ -4795,57 +4788,37 @@ void WaveshareEPaper4P37In::initialize() {
   this->data(0x17);
   this->data(0x17);
 	//===================
-	
   this->command(0x03);
   this->data(0x00);
   this->data(0x54);
   this->data(0x00);
   this->data(0x44); 
-
- // this->command(0x50);
- // this->data(0x3F);
-
- // this->command(0x60);
- // this->data(0x02);
- // this->data(0x00);
-
-	//Please notice that PLL must be set for version 2 IC
- // this->command(0x30);
- // this->data(0x08);
-	
- // this->command(0x61);
- // this->data(0x02);
- // this->data(0x00);
- // this->data(0x01); 
- // this->data(0x70); 
-
- // this->command(0xE3);
- // this->data(0x2F);
-
- // this->command(0x84);
- // this->data(0x01);
-
 }
+
 void HOT WaveshareEPaper4P37In::display() {
-  {
     UWORD Width, Height;
     Width = (get_width_internal() % 4 == 0)? (get_width_internal() / 4 ): (get_width_internal() / 4 + 1);
     Height = get_height_internal();
     
-    SendCommand(0x04);
-    while(DigitalRead(this->busy_pin_) == LOW) {      //LOW: busy, HIGH: idle
-        DelayMs(5);
-    } 
+    this->command(0x04);
+    this->wait_until_idle_();
 
-    SendCommand(0x10);
+    this->command(0x10);
     for (UWORD j = 0; j < Height; j++) {
         for (UWORD i = 0; i < Width; i++) {
-            SendData(pgm_read_byte(&Image[i + j * Width]));
+            this->data(pgm_read_byte(&Image[i + j * Width]));
         }
     }
-    TurnOnDisplay();
+    
+    this->command(0x12); // DISPLAY_REFRESH
+    this->data(0x00);
+    this->wait_until_idle_();
+
+    this->command(0x02); // POWER_OFF
+    this->data(0X00);
+    this->wait_until_idle_();
 } 
-}
+
 int WaveshareEPaper4P37In::get_width_internal() { return 512; }
 int WaveshareEPaper4P37In::get_height_internal() { return 368; }
 void WaveshareEPaper4P37In::dump_config() {
