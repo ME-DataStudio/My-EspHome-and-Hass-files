@@ -5,12 +5,12 @@ substitutions:
   wake_up_time: "04:00:00"
   image_url: "http://homeassistant.local:8090/local/bomen.png"
 
-  clk_pin: "GPIO12"
-  mosi_pin: "GPIO11"
-  cs_pin: "GPIO10"
-  dc_pin: "GPIO9"
-  busy_pin: "GPIO7"
-  reset_pin: "GPIO5"
+  clk_pin: "GPIO36"
+  mosi_pin: "GPIO35"
+  cs_pin: "GPIO5"
+  dc_pin: "GPIO6"
+  busy_pin: "GPI12"
+  reset_pin: "GPI14"
 
   waveshare_model: "4.37in" # or another waveshare model must be existing in the components sourcefile display.py
 
@@ -82,6 +82,7 @@ display:
 deep_sleep:
   run_duration: 40s
   sleep_duration: 25200s # 7h
+
 
 
 
