@@ -4756,43 +4756,7 @@ void WaveshareEPaper13P3InK::dump_config() {
 //  - https://github.com/waveshareteam/e-Paper/tree/master/Arduino/epd4in37g
 // ========================================================
 void WaveshareEPaper4P37In::initialize() {
-  this->wait_until_idle_();
-  this->command(0x12);  // SWRESET
-  this->wait_until_idle_();	
-
-  this->command(0x01);
-  this->data(0x3F);
-
-  this->command(0x00);
-  this->data(0x4F);
-  this->data(0x69);
-
-  this->command(0x05);
-  this->data(0x40);
-  this->data(0x1F);
-  this->data(0x1F);
-  this->data(0x2C);
-
-  this->command(0x08);
-  this->data(0x6F);
-  this->data(0x1F);
-  this->data(0x1F);
-  this->data(0x22);
-
-	//===================
-	//20211212
-	//First setting
-  this->command(0x06);
-  this->data(0x6F);
-  this->data(0x1F);
-  this->data(0x17);
-  this->data(0x17);
-	//===================
-  this->command(0x03);
-  this->data(0x00);
-  this->data(0x54);
-  this->data(0x00);
-  this->data(0x44); 
+	this->wait_until_idle_();
 }
 
 void HOT WaveshareEPaper4P37In::display() {
