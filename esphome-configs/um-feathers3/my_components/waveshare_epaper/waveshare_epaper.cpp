@@ -4756,32 +4756,82 @@ void WaveshareEPaper13P3InK::dump_config() {
 //  - https://github.com/waveshareteam/e-Paper/tree/master/Arduino/epd4in37g
 // ========================================================
 void WaveshareEPaper4P37In::initialize() {
+	this->reset_pin_->digital_write(true);
+	delay(20);
+	this->reset_pin_->digital_write(false);
+	delay(2);
+	this->reset_pin_->digital_write(true);
+	delay(2);
 	this->wait_until_idle_();
+	delay(20);
+	this->command(0xAA);
+	this->data(0x49);
+    this->data(0x55);
+    this->data(0x20);
+    this->data(0x08);
+    this->data(0x09);
+    this->data(0x18);
+    this->command(0x01); // Power Settings
+    this->data(0x3F);
+    this->command(0x00); // Panel Settings
+    this->data(0x4F);
+    this->data(0x69);
+    this->command(0x05); // BTST1
+    this->data(0x40);
+    this->data(0x1F);
+    this->data(0x1F);
+    this->data(0x2C);
+    this->command(0x08); // BTST3
+    this->data(0x6F);
+    this->data(0x1F);
+    this->data(0x1F);
+    this->data(0x22);
+    this->command(0x06); // Booster Soft Start
+    this->data(0x6F);
+    this->data(0x1F);
+    this->data(0x17);
+    this->data(0x17);
+    this->command(0x03); // Power Off Sequence
+    this->data(0x00);
+    this->data(0x54);
+    this->data(0x00);
+    this->data(0x44);
+    this->command(0x50); // VCOM and Data Interval Setting
+    this->data(0x3F);    // white border
+    this->command(0x60); // TCON
+    this->data(0x02);
+    this->data(0x00);
+    this->command(0x30); // PLL Control
+    this->data(0x08);
+    this->command(0x61); // Resolution Setting
+    this->data(0x02);
+    this->data(0x00);
+    this->data(0x01);
+    this->data(0x70);
+    this->command(0xE3); // PWS
+    this->data(0x2F);
+    this->command(0x84); // T_VDCS
+    this->data(0x01);
+    this->command(0x04); //poweron
+    this->wait_until_idle_();
 }
 
 void HOT WaveshareEPaper4P37In::display() {
-    UWORD Width, Height;
-    Width = (get_width_internal() % 4 == 0)? (get_width_internal() / 4 ): (get_width_internal() / 4 + 1);
-    Height = get_height_internal();
-    
-    this->command(0x04);
-    this->wait_until_idle_();
+	 // do single full update
+  this->command(0x10);
+  this->start_data_();
+  this->write_array(this->buffer_, this->get_buffer_length_());
+  this->end_data_();
 
-    this->command(0x10);
-    for (UWORD j = 0; j < Height; j++) {
-        for (UWORD i = 0; i < Width; i++) {
-            this->data(pgm_read_byte(&Image[i + j * Width]));
-        }
-    }
-    
-    this->command(0x12); // DISPLAY_REFRESH
-    this->data(0x00);
-    this->wait_until_idle_();
+  // COMMAND DISPLAY REFRESH
+  this->command(0x12);
+  this->data(0x00);
+  this->wait_until_idle_();
 
-    this->command(0x02); // POWER_OFF
-    this->data(0X00);
-    this->wait_until_idle_();
-} 
+  this->command(0x02); // POWER_OFF
+  this->data(0X00);
+  this->wait_until_idle_();
+}
 
 int WaveshareEPaper4P37In::get_width_internal() { return 512; }
 int WaveshareEPaper4P37In::get_height_internal() { return 368; }
